@@ -4,7 +4,7 @@ import type {
   SolanaSignature,
   TypedDataPayload,
 } from './accounts.js';
-import type { ChainId, EvmChainId, SolanaChainId } from './chains.js';
+import type { BtcChainId, ChainId, EvmChainId, SolanaChainId, TonChainId, TronChainId } from './chains.js';
 
 /**
  * WalletWorker API surface - the typed contract that wdk-web-core exposes to
@@ -45,6 +45,30 @@ export interface WalletWorkerApi {
    * Per PRD 01 Addendum S12.4 v1.0 eth_sendTransaction.
    */
   account_sendTransaction(chain: EvmChainId, index: number, tx: Record<string, unknown>): Promise<Hex>;
+
+  /** Sends native SOL (value in lamports) on a Solana chain; returns the base58 signature. */
+  account_sendSolanaTransaction(chain: SolanaChainId, index: number, to: string, value: bigint): Promise<string>;
+
+  /** Derives the BIP-84 native-segwit Bitcoin address at an index (offline). */
+  account_getBtcAddress(chain: BtcChainId, index: number): Promise<string>;
+  /** Reads the account's confirmed Bitcoin balance in satoshis. */
+  account_getBtcBalance(chain: BtcChainId, index: number): Promise<bigint>;
+  /** Sends native BTC (value in satoshis) on a Bitcoin chain; returns the txid. */
+  account_sendBtcTransaction(chain: BtcChainId, index: number, to: string, value: bigint, confirmationTarget?: number): Promise<string>;
+
+  /** Returns the account's TON (v5r1) address. */
+  account_getTonAddress(chain: TonChainId, index: number): Promise<string>;
+  /** Reads the account's TON balance in nanotons. */
+  account_getTonBalance(chain: TonChainId, index: number): Promise<bigint>;
+  /** Sends native TON (value in nanotons) on a TON chain; returns the tx hash. */
+  account_sendTonTransaction(chain: TonChainId, index: number, to: string, value: bigint): Promise<string>;
+
+  /** Returns the account's Tron (base58) address. */
+  account_getTronAddress(chain: TronChainId, index: number): Promise<string>;
+  /** Reads the account's Tron balance in sun. */
+  account_getTronBalance(chain: TronChainId, index: number): Promise<bigint>;
+  /** Sends native TRX (value in sun) on a Tron chain; returns the tx hash. */
+  account_sendTronTransaction(chain: TronChainId, index: number, to: string, value: bigint): Promise<string>;
 
   // Solana account operations
   account_getSolanaAddress(chain: SolanaChainId, index: number): Promise<Base58Address>;
@@ -87,6 +111,8 @@ export interface WalletWorkerApi {
 
   // RPC operations
   rpc_getBalance(chain: ChainId, address: string): Promise<bigint>;
+  rpc_getTokenBalance(chain: ChainId, address: string, tokenAddress: string): Promise<bigint>;
+  rpc_getTransactionStatus(chain: ChainId, hash: string): Promise<'pending' | 'success' | 'failed'>;
 }
 
 /**

@@ -20,6 +20,13 @@ describe('chains/index', () => {
     expect(keys).toContain('avalanche-mainnet');
     expect(keys).toContain('solana-devnet');
     expect(keys).toContain('solana-testnet');
+    // Bitcoin (BIP-84 native segwit via @tetherto/wdk-wallet-btc)
+    expect(keys).toContain('bitcoin-mainnet');
+    expect(keys).toContain('bitcoin-testnet');
+    // TON (v5r1 via @tetherto/wdk-wallet-ton)
+    expect(keys).toContain('ton-mainnet');
+    // Tron (via @tetherto/wdk-wallet-tron)
+    expect(keys).toContain('tron-mainnet');
   });
 
   it('B1-2: all loaders resolve to chain modules with the right id meta', async () => {

@@ -98,18 +98,55 @@ export const SOLANA_CHAIN_IDS = [
 /** Solana chain identifiers (BIP-44 coin type 501). */
 export type SolanaChainId = typeof SOLANA_CHAIN_IDS[number];
 
+/**
+ * Canonical list of Bitcoin chain identifiers. BIP-44 coin type 0 (mainnet) /
+ * 1 (testnet); WDK derives BIP-84 native-segwit accounts by default.
+ */
+export const BITCOIN_CHAIN_IDS = [
+  'bitcoin-mainnet',
+  'bitcoin-testnet',
+] as const satisfies readonly string[];
+
+/** Bitcoin chain identifiers (BIP-44 coin type 0 / 1). */
+export type BtcChainId = typeof BITCOIN_CHAIN_IDS[number];
+
+/**
+ * TON (The Open Network) chain identifiers. BIP-44 coin type 607;
+ * @tetherto/wdk-wallet-ton derives v5r1 wallet accounts.
+ */
+export const TON_CHAIN_IDS = [
+  'ton-mainnet',
+] as const satisfies readonly string[];
+
+/** TON chain identifiers. */
+export type TonChainId = typeof TON_CHAIN_IDS[number];
+
+/** Tron chain identifiers. BIP-44 coin type 195; @tetherto/wdk-wallet-tron. */
+export const TRON_CHAIN_IDS = [
+  'tron-mainnet',
+] as const satisfies readonly string[];
+
+/** Tron chain identifiers. */
+export type TronChainId = typeof TRON_CHAIN_IDS[number];
+
 /** Any supported chain identifier. */
-export type ChainId = EvmChainId | SolanaChainId;
+export type ChainId = EvmChainId | SolanaChainId | BtcChainId | TonChainId | TronChainId;
 
 /**
  * Chain family discriminant - used for runtime routing in worker handlers
  * and for code-splitting boundaries in the chain-loader registry.
  */
-export type ChainFamily = 'evm' | 'solana';
+export type ChainFamily = 'evm' | 'solana' | 'bitcoin' | 'ton' | 'tron';
 
 /** Map a ChainId to its family at the type level. */
 export type ChainFamilyOf<T extends ChainId> = T extends EvmChainId
   ? 'evm'
   : T extends SolanaChainId
     ? 'solana'
-    : never;
+    : T extends BtcChainId
+      ? 'bitcoin'
+      : T extends TonChainId
+        ? 'ton'
+        : T extends TronChainId
+          ? 'tron'
+          : never;

@@ -31,6 +31,13 @@ import * as _solanaMod from './solana.js';
 // B1-2 bulk-add
 import * as _solanaDevnetMod from './solana-devnet.js';
 import * as _solanaTestnetMod from './solana-testnet.js';
+// Bitcoin (BIP-84 native segwit via @tetherto/wdk-wallet-btc)
+import * as _bitcoinMainnetMod from './bitcoin-mainnet.js';
+import * as _bitcoinTestnetMod from './bitcoin-testnet.js';
+// TON (v5r1 via @tetherto/wdk-wallet-ton)
+import * as _tonMainnetMod from './ton.js';
+// Tron (via @tetherto/wdk-wallet-tron)
+import * as _tronMainnetMod from './tron.js';
 import { EVM_BULK_CHAINS } from './_evm-bulk-chains.js';
 
 export type { ChainModuleMeta } from './types.js';
@@ -72,6 +79,13 @@ export const CHAIN_LOADERS = {
   // B1-2: Solana extras (per-file; different wallet engine)
   'solana-devnet': () => Promise.resolve(_solanaDevnetMod),
   'solana-testnet': () => Promise.resolve(_solanaTestnetMod),
+  // Bitcoin (different wallet engine; BIP-84 native segwit)
+  'bitcoin-mainnet': () => Promise.resolve(_bitcoinMainnetMod),
+  'bitcoin-testnet': () => Promise.resolve(_bitcoinTestnetMod),
+  // TON (v5r1)
+  'ton-mainnet': () => Promise.resolve(_tonMainnetMod),
+  // Tron
+  'tron-mainnet': () => Promise.resolve(_tronMainnetMod),
   // B1-2: bulk EVM chains - each loader returns the pre-built module from
   // the EVM_BULK_CHAINS registry. F-MV3-04 compatible (no dynamic import()).
   'optimism-mainnet': () => Promise.resolve(EVM_BULK_CHAINS['optimism-mainnet']!),
