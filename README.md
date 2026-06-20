@@ -42,6 +42,20 @@ This template is the missing reference. It is a **real, working, self-custodial 
 
 ---
 
+## Screenshots
+
+| Onboarding | Recovery phrase | Dashboard |
+|:--:|:--:|:--:|
+| ![Onboarding](./media/screenshots/01-onboarding.png) | ![Recovery phrase](./media/screenshots/02-recovery-phrase.png) | ![Dashboard](./media/screenshots/05-dashboard.png) |
+
+| Receive (QR) | Send | Multi-chain |
+|:--:|:--:|:--:|
+| ![Receive](./media/screenshots/07-receive.png) | ![Send](./media/screenshots/08-send.png) | ![Chains](./media/screenshots/06-chain-selector.png) |
+
+**▶ Demo video:** [`media/demo/wdk-wallet-template-demo.webm`](./media/demo/wdk-wallet-template-demo.webm) — a full walkthrough (onboarding → dashboard → multi-chain → send/receive). Click **Download** / **Raw** on GitHub to view. The shot-by-shot script is in [`docs/DEMO.md`](./docs/DEMO.md).
+
+> Screenshots are captured from the running app via headless Chromium against a throwaway test wallet (no real funds).
+
 ## Architecture
 
 ```
