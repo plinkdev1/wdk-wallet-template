@@ -1,0 +1,24 @@
+{
+  "name": "wdk-wallet-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WDK Wallet Template — a production-ready Next.js self-custodial multi-chain wallet template built on Tether's Wallet Development Kit (WDK). Reference implementation for the Tether WDK 'Template Wallet' bounty.",
+  "type": "module",
+  "license": "MIT",
+  "packageManager": "pnpm@10.15.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:packages": "pnpm -F @wdk-starter/wdk-web-core build && pnpm -F @wdk-starter/wdk-ui build",
+    "dev": "pnpm build:packages && pnpm -F @wdk-starter/web dev",
+    "build": "pnpm build:packages && pnpm -F @wdk-starter/web build",
+    "start": "pnpm -F @wdk-starter/web start",
+    "typecheck": "pnpm -r --filter=\"./packages/**\" --filter=\"./apps/**\" typecheck",
+    "test": "pnpm -r --filter=\"./packages/**\" test",
+    "lint": "pnpm -F @wdk-starter/web lint"
+  },
+  "devDependencies": {
+    "typescript": "5.5.4"
+  }
+}
