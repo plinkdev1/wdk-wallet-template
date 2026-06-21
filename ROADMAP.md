@@ -58,3 +58,9 @@ The thesis — **write the engine once, ship on every framework** — is why thi
 template, the [extension](https://github.com/plinkdev1/wdk-wallet-extension/blob/main/ROADMAP.md),
 and the [WooCommerce checkout](https://github.com/plinkdev1/wdk-checkout-and-woocommerce-plugin/blob/main/ROADMAP.md)
 advance together.
+
+
+## Customization & presentation follow-ups
+
+- **Runtime theme/brand picker UI** — the template ships a fixed theme by design, but the `wdk-ui` picker components (`ThemePicker`, `BrandPicker`, `useThemePicker`, `useBrandPicker`) are available to wire into a Settings route for end-user customization (the extension demonstrates the pattern). Code-level theming + branding already work today (see `docs/CUSTOMIZATION.md`).
+- **Capture screenshots** of the DeFi dialog (Lend/Swap/Bridge/Gasless) + Buy, and add to `media/screenshots/` + README (needs RPC-wired headless capture).
