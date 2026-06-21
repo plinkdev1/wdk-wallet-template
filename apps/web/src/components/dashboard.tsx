@@ -10,6 +10,8 @@ import { SendDialog } from './send-dialog'
 import { DefiDialog } from './defi-dialog'
 import { BuyDialog } from './buy-dialog'
 import { Activity } from './activity'
+import { AppearanceDialog } from './appearance-dialog'
+import { useAppearance } from './appearance-provider'
 
 const OPTIONS = chainOptions((id) => <NetworkIcon chain={id} size={16} />)
 
@@ -24,6 +26,7 @@ export function Dashboard () {
   } = useWallet()
   const [dialog, setDialog] = useState<'none' | 'receive' | 'send' | 'defi' | 'buy'>('none')
   const [copied, setCopied] = useState(false)
+  const { open: appearanceOpen, setOpen: setAppearanceOpen } = useAppearance()
   const chain = getChain(chainId)
 
   async function copy () {
@@ -38,7 +41,10 @@ export function Dashboard () {
       <div style={{ width: '100%', maxWidth: 460, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <BrandHeader />
-          <Button variant="ghost" size="sm" onClick={() => void lock()}>Lock</Button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Button variant="ghost" size="sm" onClick={() => setAppearanceOpen(true)} aria-label="Appearance settings" title="Appearance">⚙</Button>
+            <Button variant="ghost" size="sm" onClick={() => void lock()}>Lock</Button>
+          </div>
         </header>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
@@ -88,6 +94,7 @@ export function Dashboard () {
       {dialog === 'send' && address && <SendDialog chainId={chainId} onClose={() => setDialog('none')} />}
       {dialog === 'defi' && address && <DefiDialog chainId={chainId} accountIndex={accountIndex} onClose={() => setDialog('none')} />}
       {dialog === 'buy' && address && <BuyDialog chainId={chainId} address={address} onClose={() => setDialog('none')} />}
+      {appearanceOpen && <AppearanceDialog />}
     </main>
   )
 }
