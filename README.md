@@ -156,10 +156,41 @@ Framework-specific notes are in [`docs/INTEGRATION.md`](./docs/INTEGRATION.md).
 
 ---
 
+## Customization — theming & branding
+
+Re-skin and re-brand **without touching component code**. The template consumes
+the same `@wdk-starter/wdk-ui` theme + brand system as the extension: three
+built-in presets (warm/cool/light), full color/type/radius/motion control via
+CSS variables, and `BrandProvider` for the name/wordmark/mark. One edit in
+`apps/web/src/app/providers.tsx` re-skins the whole app:
+
+```tsx
+<WdkThemeProvider theme={{ ...wdkWarmTheme, colors: { ...wdkWarmTheme.colors, primary: '#0D9488' } }}>
+```
+
+Runtime theme/brand pickers (as in the extension) are available from `wdk-ui` to
+wire if you want end-user customization. Full guide:
+**[`docs/CUSTOMIZATION.md`](./docs/CUSTOMIZATION.md)**.
+
+---
+
+## x402 — agentic / per-request payments
+
+The shared engine can **pay HTTP `402 Payment Required` challenges**: the worklet
+signs an EIP-3009 authorization (x402's "exact" scheme) and returns the
+`X-PAYMENT` header (`worker.x402_createPayment`, callable over Comlink). The
+server-side facilitator (for charging bots/agents) ships in
+[wdk-checkout](https://github.com/plinkdev1/wdk-checkout-and-woocommerce-plugin);
+the settlement primitive in
+[wdk-protocol-eip3009](https://github.com/plinkdev1/wdk-protocol-eip3009).
+
+---
+
 ## Documentation
 
 - [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — **M1**: framework selection, the worklet model, integration plan.
 - [`docs/SETUP.md`](./docs/SETUP.md) — install, run, configure RPC, troubleshoot.
+- [`docs/CUSTOMIZATION.md`](./docs/CUSTOMIZATION.md) — theming & branding (swap colors/logo).
 - [`docs/INTEGRATION.md`](./docs/INTEGRATION.md) — how WDK is wired into Next.js (worker, polyfills, Comlink).
 - [`docs/DEMO.md`](./docs/DEMO.md) — the demo-video walkthrough script.
 
