@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button, Card, ChainSelector, NetworkIcon, Skeleton } from '@wdk-starter/wdk-ui'
+import { Button, Card, ChainSelector, NetworkIcon, Skeleton, TokenIcon } from '@wdk-starter/wdk-ui'
 import { useWallet } from '@/wallet/wallet-provider'
 import { chainOptions, formatAmount, getChain, familyOf } from '@/wallet/chains'
 import { BrandHeader } from './brand-header'
@@ -60,7 +60,7 @@ export function Dashboard () {
           <div style={{ fontSize: 34, fontWeight: 600, letterSpacing: -0.5 }}>
             {balanceLoading || balance === undefined
               ? <Skeleton style={{ width: 160, height: 38 }} />
-              : <>{formatAmount(balance, chain.decimals)} <span style={{ fontSize: 18, color: 'var(--text-secondary, #b3a79f)' }}>{chain.symbol}</span></>}
+              : <>{formatAmount(balance, chain.decimals)} <span style={{ fontSize: 18, color: 'var(--text-secondary, #b3a79f)', display: 'inline-flex', alignItems: 'center', gap: 5, verticalAlign: 'middle' }}><TokenIcon symbol={chain.symbol} size={20} />{chain.symbol}</span></>}
           </div>
           {usdValue && <div style={{ fontSize: 14, color: 'var(--text-secondary, #b3a79f)', marginTop: -4 }}>≈ {usdValue}</div>}
           <button onClick={copy} style={addrBtn} title="Copy address">
