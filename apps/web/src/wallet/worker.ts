@@ -13,7 +13,12 @@
 import '@wdk-starter/wdk-web-core/polyfill-globals'
 import * as Comlink from 'comlink'
 import { WalletWorker } from '@wdk-starter/wdk-web-core/worker'
-import { createHttpRpcAdapter } from '@wdk-starter/wdk-web-core'
+import {
+  createHttpRpcAdapter,
+  createFallbackPricingAdapter,
+  createBitfinexPricingAdapter,
+  createCoingeckoPricingAdapter,
+} from '@wdk-starter/wdk-web-core'
 
 // Public EVM RPCs (also the ERC-4337 smart-account provider). Override the main
 // ones with NEXT_PUBLIC_*_RPC_URL env vars (Next inlines these at build).
@@ -50,6 +55,12 @@ const instance = new WalletWorker({
   // adapter — otherwise balance reads fall back to each chain's baked-in public
   // default and a dev's configured endpoint is ignored.
   rpcAdapter: createHttpRpcAdapter({ rpcUrls: RPC_URLS }),
+  // Fiat values: Bitfinex (Tether / iFinex) primary → CoinGecko fallback, so a
+  // single price source going down (or rate-limiting) no longer blanks USD values.
+  pricingAdapter: createFallbackPricingAdapter([
+    createBitfinexPricingAdapter(),
+    createCoingeckoPricingAdapter(),
+  ]),
   ...(moonpayConfig ? { moonpayConfig } : {}),
   ...(erc4337Config ? { erc4337Config } : {})
 })
