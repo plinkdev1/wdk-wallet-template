@@ -37,6 +37,10 @@ methods; and the Next.js surface now wires them in:
    (set `NEXT_PUBLIC_BUNDLER_URL` / `NEXT_PUBLIC_MOONPAY_API_KEY`).
 4. **Lightning (Spark)** — `@tetherto/wdk-wallet-spark` instant BTC payments
    (shared bundler-shim work tracked in the extension roadmap).
+   - ✅ **Engine groundwork shipped** — the shared `wdk-web-core` now exports a
+     payment-target module (per-family address validation + BIP-21/EIP-681/**BOLT11**
+     parsing: `validateAddress`, `parsePaymentUri`, `decodeBolt11`), with 30 tests
+     and no new dependency. BOLT11 decode is what the Lightning send/receive UI consumes.
 
 ## ✅ Phase 3 — Next.js-native concerns (mostly shipped)
 
