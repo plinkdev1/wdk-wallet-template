@@ -37,6 +37,13 @@
       "@vitest/expect": "^3.2.6",
       "@vitest/mocker": "^3.2.6",
       "@vitest/pretty-format": "^3.2.6"
+    },
+    "packageExtensions": {
+      "@tetherto/wdk-wallet-btc": {
+        "dependencies": {
+          "@noble/hashes": "^1.8.0"
+        }
+      }
     }
   }
 }
