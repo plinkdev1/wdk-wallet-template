@@ -30,6 +30,8 @@ This template is the missing reference. It is a **real, working, self-custodial 
 
 > **Compounding leverage.** The wallet logic lives in two reusable, framework-agnostic packages — `wdk-web-core` (engine) and `wdk-ui` (components) — the *same* packages that power the [WDK Browser Extension](https://github.com/plinkdev1/wdk-wallet-extension). The Next.js app is a thin, idiomatic surface on top. Build the engine once; ship it on every framework.
 
+> **A browser port the official SDK doesn't ship.** WDK officially targets Bare / Node / React-Native — not the browser. Running it *correctly* in a browser (and a Web Worker) was proved out first in a dedicated [Phase 0 validation gate](https://github.com/plinkdev1/wdk-phase0-validation): byte-identical BIP-44 derivation, a documented polyfill recipe, and — as a capstone — even a **Bare-first** WDK module (`@tetherto/wdk-wallet-spark`, Lightning) running in a browser Web Worker. That evidence base is *why* this template can exist.
+
 ---
 
 ## Features
