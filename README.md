@@ -34,7 +34,7 @@ This template is the missing reference. It is a **real, working, self-custodial 
 - 🔐 **Self-custodial vault** — BIP-39 generate / import / validate, encrypted at rest with **AES-256-GCM + PBKDF2-SHA-512 (600k)** in IndexedDB.
 - 🧵 **Worklet security** — WDK runs in a Web Worker; the UI talks to it over a typed Comlink bridge and can never read a key.
 - ⛓️ **Multi-chain** — EVM (Plasma, Ethereum, Polygon, Arbitrum + testnets), **Solana**, **Bitcoin** (BIP-84), **TON** (v5r1), and **Tron** — each with one-line registry extensibility.
-- 👛 **Multi-account** — standard BIP-44 derivation; switch accounts in the UI.
+- 👛 **Multi-account** — standard BIP-44 derivation; switch accounts in the UI. _(Multiple **distinct wallets / seed vaults** per user is on the [roadmap](./ROADMAP.md); today it's multiple accounts within one encrypted vault.)_
 - 💸 **Send & Receive** — receive with QR + copy; send with **per-family address validation** (EVM/Solana/Bitcoin/TON/Tron), review, and explorer links.
 - 📜 **Activity** — live status for transactions you submit, ready to extend with the **WDK Indexer API** for full history.
 - 💵 **Fiat values** — native balances shown in **USD** via the WDK CoinGecko pricing client.
