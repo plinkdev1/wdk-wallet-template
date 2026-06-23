@@ -41,6 +41,10 @@ methods; and the Next.js surface now wires them in:
      payment-target module (per-family address validation + BIP-21/EIP-681/**BOLT11**
      parsing: `validateAddress`, `parsePaymentUri`, `decodeBolt11`), with 30 tests
      and no new dependency. BOLT11 decode is what the Lightning send/receive UI consumes.
+   - ✅ **Engine wiring shipped** — on-demand Spark manager + worker methods
+     (`account_*Spark*`, `lightning_createInvoice` / `lightning_payInvoice`) in
+     `protocols/spark.ts`, lazy + decoupled; the SDK is an app-provided optional
+     dependency, so the app installs/bundles it (shared bundler-shim work).
 
 ## ✅ Phase 3 — Next.js-native concerns (mostly shipped)
 
