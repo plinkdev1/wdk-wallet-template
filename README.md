@@ -140,9 +140,30 @@ Then open <http://localhost:3000>, create a wallet, and you're in. See [`docs/SE
 | **DeFi: Aave lend · Velora swap · USDT0 bridge** | ✅ live in the dashboard DeFi dialog (Comlink) |
 | **ERC-4337 gasless · MoonPay on-ramp** | ✅ in the engine; config-driven (see extension for the same UI pattern) |
 | **USDt / XAUt tokens** | 🚧 engine ships balances + transfers; UI surfacing next |
-| **Lightning (Spark)** | 🚧 roadmap (engine bundler-shim work; see [ROADMAP.md](./ROADMAP.md)) |
+| **Spark (Bitcoin L2) + Lightning** | ✅ live in the dashboard **Spark** dialog — address, balance, Spark↔Spark send, fund-from-Bitcoin deposit, withdraw to BTC (cooperative exit), BOLT11 receive/pay |
 
 The template is transparent about implemented vs. planned scope. Adding a chain is a single entry in `apps/web/src/wallet/chains.ts` plus a loader in `wdk-web-core`.
+
+---
+
+## Spark & Lightning
+
+**Is Spark the same as Lightning? No — but they work together.**
+
+- **Spark** is its own Bitcoin layer-2 (by Lightspark): a statechain + FROST-threshold-signing network with `spark1…` addresses. It is *not* the Bitcoin L1 chain and *not* the Lightning Network.
+- **Lightning** is a separate, older payment rail. A Spark wallet settles BOLT11 Lightning invoices **natively**, so Lightning is exposed here as a *payment method on top of Spark*, not as a standalone package.
+- **Bitcoin L1** is bridged in and out: **deposit** BTC to a Spark address to fund the L2 balance, **withdraw** back to an on-chain address via a cooperative exit.
+
+The mental model: **Spark = the chain · Lightning = a payment rail on it · Bitcoin L1 = bridged via deposit/withdraw.** In the WDK there is no standalone Lightning package — Lightning ships *through* [`@tetherto/wdk-wallet-spark`](https://www.npmjs.com/package/@tetherto/wdk-wallet-spark).
+
+The dashboard's **Spark** dialog has two tabs:
+
+- **Spark** — Receive (your `spark1…` address + QR), Send (Spark→Spark, sats), Deposit (reusable Bitcoin L1 address to top up), Withdraw (to a BTC address, with a fee quote + Fast/Medium/Slow exit speed).
+- **Lightning** — Receive (create a BOLT11 invoice) and Pay (settle one), capped by a max routing fee.
+
+Engine surface (worker methods, keys never leave the worklet): `account_getSparkAddress` · `account_getSparkBalance` · `account_sendSparkTransaction` · `account_getSparkDepositAddress` · `account_quoteSparkWithdraw` · `account_sparkWithdraw` · `lightning_createInvoice` · `lightning_payInvoice`. The ~6.4 MB Spark SDK is **lazy-loaded** into its own chunk on first use (F-SPARK-03), so it never enters the default bundle.
+
+> **@noble/hashes coexistence.** `@tetherto/wdk-wallet-btc` and the Spark SDK pin different major versions of `@noble/hashes` (v1 vs v2). The workspace resolves this with a `pnpm.packageExtensions` pin so Bitcoin L1 and Spark coexist in one bundle — see the [Phase 0 deep-dive](https://github.com/plinkdev1/wdk-phase0-validation).
 
 ---
 
