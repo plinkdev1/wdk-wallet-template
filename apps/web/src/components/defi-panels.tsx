@@ -1,26 +1,21 @@
 'use client'
 
 /**
- * DefiDialog — Aave lending, Velora swap, and USDT0 bridge for the template,
- * driven through the worklet over Comlink. The protocol runs on the keyed
- * account inside the worker; this dialog only collects intent. EVM-only.
- *
- * Public-infra protocols: no keys required (public RPC + the providers' public
- * APIs). ERC-4337 gasless + MoonPay on-ramp are wired in the engine too and
- * activate from app config — see the extension's SmartAccountView/BuyView for
- * the same pattern.
+ * DeFi panels — the reusable Aave-lending / Velora-swap / USDT0-bridge / gasless
+ * forms, driven through the worklet over Comlink. Extracted so the dedicated
+ * SwapScreen and EarnScreen tab destinations share one set of protocol wiring
+ * with no duplication. EVM-only; public-infra (public RPC + provider APIs).
  */
 
 import { useEffect, useState } from 'react'
 import { Button, Input, TokenChip } from '@wdk-starter/wdk-ui'
-import { Modal } from './modal'
 import { useWallet } from '@/wallet/wallet-provider'
 import { getWalletApi } from '@/wallet/wallet-client'
 import { parseAmount, formatAmount } from '@/wallet/chains'
 
 interface Token { readonly symbol: string, readonly address: string, readonly decimals: number }
 
-const AAVE_TOKENS: Record<string, readonly Token[]> = {
+export const AAVE_TOKENS: Record<string, readonly Token[]> = {
   ethereum: [{ symbol: 'USDT', address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', decimals: 6 }, { symbol: 'USDC', address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', decimals: 6 }],
   'polygon-mainnet': [{ symbol: 'USDT', address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', decimals: 6 }, { symbol: 'USDC', address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', decimals: 6 }],
   'arbitrum-mainnet': [{ symbol: 'USDT', address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', decimals: 6 }, { symbol: 'USDC', address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', decimals: 6 }]
@@ -35,47 +30,34 @@ const BRIDGE_ROUTES: Record<string, { targetChain: string, targetName: string, u
   'arbitrum-mainnet': { targetChain: 'ethereum', targetName: 'Ethereum', usdt: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', oft: '0x14E4A1B13bf7F943c8ff7C51fb60FA964A298D92' }
 }
 
-type Tab = 'lending' | 'swap' | 'bridge' | 'gasless'
 const ACTIONS = ['supply', 'withdraw', 'borrow', 'repay'] as const
 
-export function DefiDialog ({ chainId, accountIndex, onClose }: { chainId: string, accountIndex: number, onClose: () => void }) {
-  const [tab, setTab] = useState<Tab>('lending')
-  const [gaslessAvailable, setGaslessAvailable] = useState(false)
-  const [gasless, setGasless] = useState(false)
-  const supported = Boolean(AAVE_TOKENS[chainId])
-
+/** True when the wallet's ERC-4337 bundler is configured (gasless available). */
+export function useGaslessAvailable (): boolean {
+  const [available, setAvailable] = useState(false)
   useEffect(() => {
     let off = false
     void (async () => {
-      try { const ok = await getWalletApi().erc4337_isConfigured(); if (!off) setGaslessAvailable(ok) } catch { /* not configured */ }
+      try { const ok = await getWalletApi().erc4337_isConfigured(); if (!off) setAvailable(ok) } catch { /* not configured */ }
     })()
     return () => { off = true }
   }, [])
+  return available
+}
 
+/** "⚡ Gasless" toggle — render above any panel when gasless is available. */
+export function GaslessToggle ({ gasless, onChange }: { gasless: boolean, onChange: (b: boolean) => void }) {
   return (
-    <Modal title="DeFi" onClose={onClose}>
-      {!supported && <p style={note}>Aave, Velora, and USDT0 are wired for Ethereum, Polygon, and Arbitrum. Switch networks to use them.</p>}
-      {supported && (
-        <>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
-            {(['lending', 'swap', 'bridge', 'gasless'] as Tab[]).map((t) => (
-              <Button key={t} size="sm" variant={tab === t ? 'primary' : 'secondary'} onClick={() => setTab(t)} style={{ flex: 1, textTransform: 'capitalize', fontSize: 12 }}>{t}</Button>
-            ))}
-          </div>
-          {gaslessAvailable && tab !== 'gasless' && (
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, marginBottom: 12 }}>
-              <input type="checkbox" checked={gasless} onChange={(e) => setGasless(e.target.checked)} />
-              ⚡ Gasless (run via the smart account — pay no native gas)
-            </label>
-          )}
-          {tab === 'lending' && <Lending chainId={chainId} accountIndex={accountIndex} gasless={gasless} />}
-          {tab === 'swap' && <Swap chainId={chainId} accountIndex={accountIndex} gasless={gasless} />}
-          {tab === 'bridge' && <Bridge chainId={chainId} accountIndex={accountIndex} gasless={gasless} />}
-          {tab === 'gasless' && <Gasless chainId={chainId} accountIndex={accountIndex} />}
-        </>
-      )}
-    </Modal>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
+      <input type="checkbox" checked={gasless} onChange={(e) => onChange(e.target.checked)} />
+      ⚡ Gasless (run via the smart account — pay no native gas)
+    </label>
   )
+}
+
+/** Whether Aave/Velora/USDT0 are wired for this chain. */
+export function defiSupported (chainId: string): boolean {
+  return Boolean(AAVE_TOKENS[chainId])
 }
 
 function useTxState () {
@@ -85,7 +67,7 @@ function useTxState () {
   return { busy, setBusy, error, setError, hash, setHash }
 }
 
-function Lending ({ chainId, accountIndex, gasless }: { chainId: string, accountIndex: number, gasless: boolean }) {
+export function Lending ({ chainId, accountIndex, gasless }: { chainId: string, accountIndex: number, gasless: boolean }) {
   const tokens = AAVE_TOKENS[chainId]!
   const [action, setAction] = useState<typeof ACTIONS[number]>('supply')
   const [tokenIdx, setTokenIdx] = useState(0)
@@ -131,7 +113,7 @@ function Lending ({ chainId, accountIndex, gasless }: { chainId: string, account
   )
 }
 
-function Swap ({ chainId, accountIndex, gasless }: { chainId: string, accountIndex: number, gasless: boolean }) {
+export function Swap ({ chainId, accountIndex, gasless }: { chainId: string, accountIndex: number, gasless: boolean }) {
   const tokens = SWAP_TOKENS[chainId]!
   const [inIdx, setInIdx] = useState(0)
   const [outIdx, setOutIdx] = useState(1)
@@ -174,7 +156,7 @@ function Swap ({ chainId, accountIndex, gasless }: { chainId: string, accountInd
   )
 }
 
-function Bridge ({ chainId, accountIndex, gasless }: { chainId: string, accountIndex: number, gasless: boolean }) {
+export function Bridge ({ chainId, accountIndex, gasless }: { chainId: string, accountIndex: number, gasless: boolean }) {
   const { address } = useWallet()
   const route = BRIDGE_ROUTES[chainId]
   const [amount, setAmount] = useState('')
@@ -225,7 +207,7 @@ function Bridge ({ chainId, accountIndex, gasless }: { chainId: string, accountI
   )
 }
 
-function Gasless ({ chainId, accountIndex }: { chainId: string, accountIndex: number }) {
+export function Gasless ({ chainId, accountIndex }: { chainId: string, accountIndex: number }) {
   const [config, setConfig] = useState<'checking' | 'on' | 'off'>('checking')
   const [smartAddr, setSmartAddr] = useState<string | null>(null)
   const [smartBal, setSmartBal] = useState<bigint | null>(null)
@@ -283,7 +265,7 @@ function Gasless ({ chainId, accountIndex }: { chainId: string, accountIndex: nu
   )
 }
 
-function Row ({ label, children }: { label: string, children: React.ReactNode }) {
+export function Row ({ label, children }: { label: string, children: React.ReactNode }) {
   return <div><span style={{ fontSize: 12, color: 'var(--text-secondary, #b3a79f)' }}>{label}</span><div style={{ display: 'flex', gap: 6, marginTop: 4 }}>{children}</div></div>
 }
 function Done ({ hash }: { hash: string }) {
@@ -291,7 +273,7 @@ function Done ({ hash }: { hash: string }) {
 }
 function usd (base8: bigint): string { try { return '$' + (Number(base8) / 1e8).toFixed(2) } catch { return '—' } }
 
-const col: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 12 }
-const note: React.CSSProperties = { margin: 0, padding: '10px 12px', background: 'var(--bg-elevated-2, #241f1c)', borderRadius: 8, fontSize: 12, color: 'var(--text-secondary, #b3a79f)' }
-const pill: React.CSSProperties = { padding: '8px 10px', background: 'var(--bg-elevated-2, #241f1c)', borderRadius: 8, fontSize: 13 }
-const err: React.CSSProperties = { margin: 0, color: 'var(--color-error, #ef4444)', fontSize: 13 }
+export const col: React.CSSProperties = { display: 'flex', flexDirection: 'column', gap: 12 }
+export const note: React.CSSProperties = { margin: 0, padding: '10px 12px', background: 'var(--bg-elevated-2, #241f1c)', borderRadius: 8, fontSize: 12, color: 'var(--text-secondary, #b3a79f)' }
+export const pill: React.CSSProperties = { padding: '8px 10px', background: 'var(--bg-elevated-2, #241f1c)', borderRadius: 8, fontSize: 13 }
+export const err: React.CSSProperties = { margin: 0, color: 'var(--color-error, #ef4444)', fontSize: 13 }

@@ -97,12 +97,13 @@ advance together.
   (`ThemePicker`, `BrandPicker`, `useThemePicker`, `useBrandPicker`,
   `useCustomPrimary`) into the app, with an any-hex primary override — all
   persisted to localStorage. Code-level theming still works (see `docs/CUSTOMIZATION.md`).
-- ✅ **Capture screenshots** of the DeFi dialog (Lend/Swap/Bridge/Gasless) + Buy —
-  done via a reusable component-render harness (`apps/web/screenshots/`,
-  `pnpm screenshots:build`) that mounts the real worklet-coupled dialogs with the
-  client/provider stubbed and the app's own dark theme; captured to
-  `media/screenshots/{defi-dialog,buy-dialog}.png` and shown in the README. No
-  running wallet / RPC needed.
+- ✅ **Capture screenshots** of the real wallet surfaces (Home shell, Swap, Earn,
+  Buy) — done via a reusable component-render harness (`apps/web/screenshots/`,
+  `pnpm screenshots:build`) that mounts the real worklet-coupled `WalletShell` /
+  dialogs with the client/provider stubbed, the app's own dark theme, and the
+  real `public/` brand + token assets; captured to
+  `media/screenshots/{home-shell,swap-screen,earn-screen,buy-dialog}.png` and
+  shown in the README. No running wallet / RPC needed.
 
 
 ## Security / dependency follow-ups
@@ -127,7 +128,13 @@ on the already-pro engine. Phase 1 cornerstone shipped; the rest is incremental.
   selector (DeFi Lend/Swap/Bridge, Buy); the dashboard token rows + balance card
   already show real marks. Ready for any token.
 - ✅ **Navigation shell (Phase 1)** — the single-page "modal soup" is now a real
-  tabbed IA: a shared `wdk-ui` `TabBar` primitive drives a **Home · Activity ·
-  Settings** `WalletShell`. Home keeps the balance + token list + action cluster;
-  Activity and Settings are first-class destinations. (Next: dedicated Swap /
-  Earn / Bridge screens, AmountInput, ReviewSheet/SuccessScreen, asset detail.)
+  tabbed IA: a shared `wdk-ui` `TabBar` primitive drives a **Home · Swap · Earn ·
+  Activity · Settings** `WalletShell`. Home keeps the balance + token list +
+  action cluster; Swap/Earn/Activity/Settings are first-class destinations.
+- ✅ **Dedicated Swap / Earn screens** — the cramped DeFi modal is retired. Swap
+  (Velora best-route) and Earn (Aave V3 lend · USDT0 bridge · gasless smart
+  account) are now full tab destinations on a shared `Screen` layout, sharing one
+  set of protocol wiring (`defi-panels.tsx`) with no duplication. The gasless
+  toggle rides above the forms when a bundler is configured; non-EVM chains get a
+  clear note instead of a dead form. (Next: AmountInput with fiat⇄crypto + Max,
+  ReviewSheet/SuccessScreen, real Send flow, asset detail.)

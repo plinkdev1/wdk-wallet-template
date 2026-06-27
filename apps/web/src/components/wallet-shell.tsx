@@ -4,9 +4,10 @@
  * WalletShell — the navigable pro-wallet IA (PRD Phase 1 cornerstone).
  *
  * Replaces the single-page "modal soup" with a real tab shell: Home (balance +
- * tokens + action cluster), Activity (history), and Settings (appearance,
- * security, account). The heavy flows (receive/send/buy/DeFi/spark) stay as the
- * Home action launchers; Activity and Settings become first-class destinations.
+ * tokens + action cluster), Swap (Velora), Earn (Aave lend / USDT0 bridge /
+ * gasless), Activity (history), and Settings (appearance, security, account).
+ * The dedicated Swap/Earn destinations retire the old cramped DeFi modal; the
+ * remaining heavy flows (receive/send/buy/spark) stay as Home action launchers.
  * Built on the shared wdk-ui TabBar so the extension popup can adopt the same IA.
  */
 
@@ -15,19 +16,24 @@ import { Button, Card, TabBar, type TabItem } from '@wdk-starter/wdk-ui'
 import { useWallet } from '@/wallet/wallet-provider'
 import { Dashboard } from './dashboard'
 import { Activity } from './activity'
+import { Screen } from './screen'
+import { SwapScreen } from './swap-screen'
+import { EarnScreen } from './earn-screen'
 import { AppearanceDialog } from './appearance-dialog'
 import { useAppearance } from './appearance-provider'
 
-type TabId = 'home' | 'activity' | 'settings'
+type TabId = 'home' | 'swap' | 'earn' | 'activity' | 'settings'
 
 const TABS: readonly TabItem[] = [
   { id: 'home', label: 'Home', icon: '◎' },
+  { id: 'swap', label: 'Swap', icon: '⇄' },
+  { id: 'earn', label: 'Earn', icon: '％' },
   { id: 'activity', label: 'Activity', icon: '≡' },
-  { id: 'settings', label: 'Settings', icon: '⚙' },
+  { id: 'settings', label: 'Settings', icon: '⚙' }
 ]
 
-export function WalletShell (): React.JSX.Element {
-  const [tab, setTab] = useState<TabId>('home')
+export function WalletShell ({ initialTab = 'home' }: { initialTab?: TabId } = {}): React.JSX.Element {
+  const [tab, setTab] = useState<TabId>(initialTab)
   const { open: appearanceOpen } = useAppearance()
 
   return (
@@ -35,7 +41,9 @@ export function WalletShell (): React.JSX.Element {
       <div style={{ flex: 1, display: 'flex', justifyContent: 'center', overflowY: 'auto' }}>
         <div style={{ width: '100%', maxWidth: 460 }}>
           {tab === 'home' && <Dashboard />}
-          {tab === 'activity' && <TabPanel title="Activity"><Activity /></TabPanel>}
+          {tab === 'swap' && <SwapScreen />}
+          {tab === 'earn' && <EarnScreen />}
+          {tab === 'activity' && <Screen title="Activity"><Activity /></Screen>}
           {tab === 'settings' && <SettingsTab />}
         </div>
       </div>
@@ -45,20 +53,11 @@ export function WalletShell (): React.JSX.Element {
   )
 }
 
-function TabPanel ({ title, children }: { title: string, children: React.ReactNode }): React.JSX.Element {
-  return (
-    <main style={{ display: 'flex', flexDirection: 'column', padding: '24px 16px', gap: 16 }}>
-      <h1 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>{title}</h1>
-      {children}
-    </main>
-  )
-}
-
 function SettingsTab (): React.JSX.Element {
   const { address, accountIndex, lock } = useWallet()
   const { setOpen: setAppearanceOpen } = useAppearance()
   return (
-    <TabPanel title="Settings">
+    <Screen title="Settings">
       <Card padding="lg" variant="elevated" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <Row label="Account" value={`Account ${accountIndex + 1}`} />
         {address && <Row label="Address" value={`${address.slice(0, 6)}…${address.slice(-4)}`} mono />}
@@ -68,7 +67,7 @@ function SettingsTab (): React.JSX.Element {
       <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-secondary, #b3a79f)' }}>
         Self-custodial · keys never leave the worklet · built on Tether WDK
       </p>
-    </TabPanel>
+    </Screen>
   )
 }
 
