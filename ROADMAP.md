@@ -97,7 +97,12 @@ advance together.
   (`ThemePicker`, `BrandPicker`, `useThemePicker`, `useBrandPicker`,
   `useCustomPrimary`) into the app, with an any-hex primary override — all
   persisted to localStorage. Code-level theming still works (see `docs/CUSTOMIZATION.md`).
-- **Capture screenshots** of the DeFi dialog (Lend/Swap/Bridge/Gasless) + Buy, and add to `media/screenshots/` + README (needs RPC-wired headless capture).
+- ✅ **Capture screenshots** of the DeFi dialog (Lend/Swap/Bridge/Gasless) + Buy —
+  done via a reusable component-render harness (`apps/web/screenshots/`,
+  `pnpm screenshots:build`) that mounts the real worklet-coupled dialogs with the
+  client/provider stubbed and the app's own dark theme; captured to
+  `media/screenshots/{defi-dialog,buy-dialog}.png` and shown in the README. No
+  running wallet / RPC needed.
 
 
 ## Security / dependency follow-ups

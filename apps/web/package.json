@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "screenshots:build": "vite build -c screenshots/vite.config.ts"
   },
   "dependencies": {
     "@wdk-starter/wdk-ui": "workspace:*",

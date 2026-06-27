@@ -58,6 +58,10 @@ This template is the missing reference. It is a **real, working, self-custodial 
 |:--:|:--:|:--:|
 | ![Receive](./media/screenshots/07-receive.png) | ![Send](./media/screenshots/08-send.png) | ![Chains](./media/screenshots/06-chain-selector.png) |
 
+| DeFi — Lend / Swap / Bridge / Gasless | Buy (fiat on-ramp) |
+|:--:|:--:|
+| ![DeFi dialog](./media/screenshots/defi-dialog.png) | ![Buy crypto dialog](./media/screenshots/buy-dialog.png) |
+
 **▶ Demo video** — a real screen recording of the running app: set up → create wallet → reveal the 12-word recovery phrase → verify it → dashboard (live on-chain balance) → receive QR.
 
 <video src="https://github.com/plinkdev1/wdk-wallet-template/raw/main/media/demo/wdk-wallet-template-demo.webm" controls muted></video>
